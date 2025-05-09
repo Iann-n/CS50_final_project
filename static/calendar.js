@@ -1,42 +1,43 @@
 document.addEventListener("DOMContentLoaded", function() {
     let currentDate = new Date(); // Calls the instructor function to return the date instance which is allowed due to new
-    console.log(currentDate);
+    day = currentDate.getDay();
+    day_idx = document.querySelectorAll('[data-index]');
+    date = currentDate.getDate();
 
-    function formatDate(date) {
-        return date.toISOString().split("T")[0]; //Change to a specific string and then split apart to extract date
-    }
-    console.log(formatDate(currentDate));
+    calendar_dates = this.getElementsByClassName("date")
+    console.log(calendar_dates);
+    console.log(date);
 
-    function updateDateDisplay () {
-        const dayColumns = document.querySelectorAll(".day-column");
-        const start = new Date(currentDate); // Creates an instance again so that it can be modified
- 
-        dayColumns.forEach((column,i) => {
-            const day = new Date(start);
-            day.setDate(start.getDate() + i);
-            const dateStr = formatDate(day);
+    for (let i = 0; i< day_idx.length; i++) {
+        const calendar_date = calendar_dates[i]
 
-            const dayName = column.textContent.split(" ")[0];
-            column.textContent = `${dayName} (${dateStr})`;
-        })
     }
 
-    const PrevButton = document.getElementById("prevBtn");
-    const NextButton = document.getElementById("nextBtn");
+    for (let i = 0; i< day_idx.length; i++) {
+        const column = day_idx[i];
+        const index = parseInt(column.getAttribute('data-index'));
 
-    if (NextButton) {
-        NextButton.addEventListener("click", () => {
-            currentDate.setDate(currentDate.getDate() + 7);
-            updateDateDisplay();
-        });
+        if (index === day) {
+            // Change CSS style to highlight today's column
+            column.style.backgroundColor = 'crimson';
+        }
     }
 
-    if (PrevButton) {
-        PrevButton.addEventListener("click", () => {
-            currentDate.setDate(currentDate.getDate() - 7);
-            updateDateDisplay();
-        });
-    }
 
-    updateDateDisplay();
+div = document.getElementsByClassName("day-column");
+const addtask_button = document.getElementsByClassName("add-task");
+
+for (let i = 0; i < div.length; i++) {
+    const div_item = div[i];
+    const button = addtask_button[i]; 
+
+    div_item.addEventListener("mouseenter", () => {
+        button.style.opacity = "1";
+    });
+
+    div_item.addEventListener("mouseleave", () => {
+        button.style.opacity = "0";
+    });
+}
+
 })
