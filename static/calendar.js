@@ -3,27 +3,27 @@ document.addEventListener("DOMContentLoaded", function() {
     day = currentDate.getDay();
     day_idx = document.querySelectorAll('[data-index]');
     date = currentDate.getDate();
-    console.log(date);
 
-    let calendar_dates = [];
-    date_div = document.getElementsByClassName("date");
-
-    let daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-    console.log(daysInMonth);
-
-    console.log(calendar_dates);
-    let emptyDaysBefore = day;
-    console.log(emptyDaysBefore);
+    calendar_dates = document.getElementsByClassName("date");
 
     for (let i = 0; i< day_idx.length; i++) {
         const column = day_idx[i];
         const index = parseInt(column.getAttribute('data-index'));
-        calendar_date = calendar_dates[i];
+
 
         if (index === day) {
             // Change CSS style to highlight today's column
             column.style.backgroundColor = 'crimson';
-            
+
+            // calculate the date for the start day
+            start_day = date - i;
+            //Loop over all the 7 days
+            for (let i = 0; i< 7; i++) {
+                calendar_date = calendar_dates[i];
+                calendar_date.textContent = start_day;
+                start_day +=1;
+            }
+
         }
     }
 
@@ -44,4 +44,31 @@ for (let i = 0; i < div.length; i++) {
     });
 }
 
-})
+prevBtn = document.getElementById("prevBtn");
+nextBtn = document.getElementById("nextBtn");
+
+function renderColumns() {
+  // Calculate Sunday of the current week
+  const sunday = new Date(currentDate);
+  sunday.setDate(currentDate.getDate() - currentDate.getDay());
+
+  // Update all date cells
+  document.querySelectorAll('.date').forEach((el, i) => {
+    const dayDate = new Date(sunday);
+    dayDate.setDate(sunday.getDate() + i);
+    el.textContent = dayDate.getDate();
+  });
+}
+
+prevBtn.addEventListener("click", () => {
+  currentDate.setDate(currentDate.getDate() - 7);
+  console.log("Previous week:", currentDate.toDateString());
+  renderColumns();
+});
+
+nextBtn.addEventListener("click", () => {
+  currentDate.setDate(currentDate.getDate() + 7);
+  console.log("Next week:", currentDate.toDateString());
+  renderColumns();
+});
+});
