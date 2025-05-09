@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Task Tracker
+{% endblock %}
+
+{% block main %}
+
+<div id="content-header" class="ubuntu-regular">
+    <div id="task-tracker-title">Welcome To Task Tracker</div>
+    <div id="header-button">
+        <button id="prevBtn"><</button>
+        <button id="nextBtn">></button>
+    </div>
+</div>
+<div class="calendar-container">
+    <div class="days">
+        <div class="day-column ubuntu-regular" data-index="0">Monday<button class="add-task">Add Task</button></div>
+        <div class="day-column ubuntu-regular" data-index="1"><button class="add-task">Add Task</button></div>
+        <div class="day-column ubuntu-regular" data-index="2">Wednesday</div>
+        <div class="day-column ubuntu-regular" data-index="3">Thursday</div>
+        <div class="day-column ubuntu-regular" data-index="4">Friday</div>
+        <div class="day-column ubuntu-regular" data-index="5">Saturday</div>
+        <div class="day-column ubuntu-regular" data-index="6">Sunday</div>
+
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
