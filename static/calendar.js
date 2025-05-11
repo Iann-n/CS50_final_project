@@ -57,6 +57,10 @@ document.querySelectorAll('.month').forEach((el, i) => {
 prevBtn = document.getElementById("prevBtn");
 nextBtn = document.getElementById("nextBtn");
 
+month = document.querySelectorAll(".month");
+dateElems = document.querySelectorAll(".date");
+console.log(month);
+console.log(date);
 function renderColumns() {
   const sunday = new Date(currentDate); // cloning current date to allow reproducability
   sunday.setDate(currentDate.getDate() - currentDate.getDay()); // Set base date to sunday so the rest of the dates could be easily looped
@@ -74,14 +78,40 @@ function renderColumns() {
     const column = el.closest('.day-column'); // finds the closest day-column class element
     column.style.backgroundColor = 
       dayDate.getTime() === today.getTime() ? 'crimson' : '';
-
-  document.querySelectorAll('.month').forEach((el, i) => {
-    const refmonth = sunday.getMonth() + 1;
-    el.textContent = refmonth; 
-  })
-
   });
+
+    document.querySelectorAll('.month').forEach((el, i) => {
+    const reffmonth = sunday.getMonth() + 1;
+    el.textContent = reffmonth; 
+
+  let refmonth = new Date(sunday).getMonth() + 1; // Initialize the month from the base date
+  console.log("Initial refmonth: ", refmonth);
+for (let i = 0; i < 7; i++) {
+  const dayDate = new Date(sunday); // clone fresh every time
+  dayDate.setDate(sunday.getDate() + i); // offset by i days
+
+  const day = dayDate.getDate();
+  const currentMonth = dayDate.getMonth() + 1;
+
+  monthItem = month[i];
+  const dateItem = dateElems[i];
+
+  dateItem.textContent = day;
+  monthItem.textContent = currentMonth;
+
+  console.log(`Day ${i}: Date = ${day}, Month = ${currentMonth}`);
+
+  if (day === 1 && currentMonth !== refmonth) {
+    refmonth = currentMonth; // update reference month
+    for (let j = i; j < month.length; j++) {
+      month[j].textContent = refmonth;
+    }
+  }
 }
+
+  })
+}
+
 prevBtn.addEventListener("click", () => {
   currentDate.setDate(currentDate.getDate() - 7);
   console.log("Previous week:", currentDate.toDateString());
