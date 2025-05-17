@@ -21,7 +21,15 @@ def after_request(response):
 
 @app.route("/", methods=["GET"])
 def homepage():
-    return render_template("task.html")
+    return render_template("login.html")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    return render_template("register.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    return render_template("login.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
