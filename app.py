@@ -17,7 +17,6 @@ def apology(message, code=400):
         def escape(s):
             for old, new in [
                 ("-", "--"),
-                (" ", "-"),
                 ("_", "__"),
                 ("?", "~q"),
                 ("%", "~p"),
@@ -29,7 +28,10 @@ def apology(message, code=400):
             return s
         return render_template("apology.html", top=code, bottom=escape(message)), code
 
-db = sqlite3.connect("users.db")
+def get_db_connection():
+    conn = sqlite3.connect("project.db", check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 @app.after_request
 def after_request(response):
@@ -49,6 +51,7 @@ def register():
         name = request.form.get("username")
         password = request.form.get("password")
         password_confirm = request.form.get("confirmation")
+        print(name, password, password_confirm)
 
         # Checks to avoid errors:
 
@@ -60,28 +63,45 @@ def register():
         if not password_confirm:
             return apology("please confirm password", 400)
          
-        # Check if username already exists
-        existing_user = db.execute("SELECT * FROM users WHERE username = ?", (name))
-        if existing_user:
-            return apology("username already taken", 400)
-        
         #ensuring password keyed in is identical
         if password != password_confirm:
             return apology("Password is not identical", 400)
+        
+
+        # Check if username already exists
+        db = get_db_connection()
+        cursor = db.cursor()
+
+        existing_user = cursor.execute("SELECT * FROM users WHERE username = ?", (name,)).fetchall()
+        if existing_user:
+            cursor.close()
+            db.close()
+            return apology("username already taken", 400)
     
         # Hashing the password
-        hashed_password = sha512(password)
+        hashed_password = sha512(password.encode()).hexdigest()
 
         # Inserting the new user into the database
-        db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (name, hashed_password))
+        cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (name, hashed_password))
         db.commit()
-        session["user_id"] = name
+
+        # Create user session
+        rows = cursor.execute("SELECT * FROM users WHERE username = ?", (name,)).fetchall()
+        session["user_id"] = rows[0]["id"]
+
+        cursor.close()
+        db.close()
+        return redirect("/task")
     else:
         return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     return render_template("login.html")
+
+@app.route("/task", methods=["GET"])
+def task():
+    return render_template("task.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
