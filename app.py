@@ -97,7 +97,33 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template("login.html")
+    # Clear any session data
+    session.clear()
+
+    if request.method == "POST":
+        name = request.form.get("username")
+        password = request.form.get("password")
+
+        # Make sure no fields are empty
+        if not name:
+            return apology("please provide a username", 400)
+        if not password:
+            return apology("please enter password", 400)
+        
+        db = get_db_connection()
+        cursor = db.cursor()
+        rows = cursor.execute("SELECT * FROM users WHERE username = ?", (name,)).fetchall()
+        if (len(rows) != 1) or (rows[0]["hash"] != sha512(password.encode()).hexdigest()):
+            cursor.close()
+            db.close()
+            return apology("Invalid username/password", 400)
+        
+        # Restore user session
+        session["user_id"] = rows[0]["id"]
+
+        return redirect("/task")
+    else:
+        return render_template("login.html")
 
 @app.route("/task", methods=["GET"])
 def task():
