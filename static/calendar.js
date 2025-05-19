@@ -129,5 +129,23 @@ console.log(currentDate)
 const curMonth = currentDate.getMonth() + 1;
 console.log(curMonth);
 
-// set current date to curMonth. If value resets to 1, curmonth + 1, if value fall below 1, curmonth -1
+
+// Implementing opertaion to show popup
+addTaskButton = document.querySelectorAll('.add-task');
+removePopup = document.getElementById("closeTaskPopup")
+
+addTaskButton.forEach( button => {
+  button.addEventListener("click", () => {
+    document.getElementById("taskPopup").style.display = "block";
+    document.getElementById("popupOverlay").style.display = "block";
+  });
+});
+
+function closeTaskPopup() {
+  document.getElementById("taskPopup").style.display = "none";
+  document.getElementById("popupOverlay").style.display = "none";
+}
+
+removePopup.addEventListener("click", closeTaskPopup);
+
 });

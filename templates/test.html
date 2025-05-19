@@ -1,0 +1,18 @@
+{% extends "layout_main.html" %}
+
+{% block title %}
+Apology
+{% endblock %}
+<div id="popupOverlay" onclick="closeTaskPopup()"></div>
+<div id="taskPopup">
+  <h3>Add New Task</h3>
+  <label>Task Name:</label>
+  <input type="text" id="taskNameInput"><br><br>
+
+  <label>Pomodoro Cycles:</label>
+  <input type="number" id="pomoCountInput" min="1" value="1"><br><br>
+
+  <button onclick="addTask()">Add</button>
+  <button onclick="closeTaskPopup()">Cancel</button>
+</div>
+{% block main %}

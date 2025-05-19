@@ -10,7 +10,7 @@ so that they can expand to fill the entire page*/
 main{
     display: flex;
     flex-direction: column;
-    background-color: silver;
+    background-color: rgb(244, 169, 169);
     overflow-x: auto;
     align-items: center;
     height: 100%;
@@ -121,6 +121,15 @@ main{
     color: whitesmoke;
     font-size:25px;
 }
+
+.outfit-regular {
+  font-family: "Outfit", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  color: whitesmoke;
+  font-size:25px;
+}
   
 #calendar-wrapper {
     display: flex;
@@ -166,7 +175,14 @@ main{
     border-radius: 10px;
     height: 100%;
     overflow-y: auto;
+    border: none;
+    border-radius: 45px;
     transition: 0.2s ease;
+}
+.day-column:hover {
+    box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
+    z-index: 2;
+    transform: scale(1.05);
 }
 
 .add-task {
@@ -183,14 +199,8 @@ main{
     cursor: pointer;
 }
 
-.day-column:hover  {
-    z-index: 2;
-    transform: scale(1.05);
-    box-shadow: 0px 10px 20px rgba(156, 24, 24, 0.4);
-}
-
 #prevBtn, #nextBtn {
-    background: silver;
+    background-color:rgb(244, 169, 169);
     color: white;
     border: none;
     border-radius: 50%;
@@ -200,8 +210,32 @@ main{
     text-align: center;
 }
 
+#taskPopup {
+    display:none; 
+    position:fixed; 
+    top:20%; 
+    left:50%; 
+    transform:translateX(-50%);
+    background:white; 
+    padding:20px; 
+    box-shadow:0px 0px 10px gray; 
+    border-radius:8px; 
+    z-index:1000;
+}
+
+#popupOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+    z-index: 1000; /* behind the popup */
+}
+
 #prevBtn:hover, #nextBtn:hover {
-    background: #555;
+    background: #8a3333;
     transform: scale(1.05);
     border-radius: 100px;
 }
