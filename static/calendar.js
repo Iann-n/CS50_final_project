@@ -132,7 +132,8 @@ console.log(curMonth);
 
 // Implementing opertaion to show popup
 addTaskButton = document.querySelectorAll('.add-task');
-removePopup = document.getElementById("closeTaskPopup")
+removePopup = document.getElementById("closeTaskPopup");
+addTaskPopup = document.getElementById("addTaskPopup");
 
 addTaskButton.forEach( button => {
   button.addEventListener("click", () => {
@@ -147,5 +148,12 @@ function closeTaskPopup() {
 }
 
 removePopup.addEventListener("click", closeTaskPopup);
+
+function addTask() {
+  const taskName = document.getElementById("taskNameInput").value; 
+  const noPomodoros = document.getElementById("pomoCountInput").value;
+
+}
+
 
 });

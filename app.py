@@ -124,10 +124,24 @@ def login():
         return redirect("/task")
     else:
         return render_template("login.html")
-
+    
 @app.route("/task", methods=["GET"])
 def task():
     return render_template("task.html")
+
+@app.route("/addtask", methods=["GET", "POST"])
+def add_task():
+    if request.method == "POST":
+        task = request.form.get("task_name")
+        pomocount = request.form.get("pomodoro_count")
+
+        if not task:
+            return apology("Please provide a task name", 400)
+        
+        if pomocount < 1:
+            return apology("Pomodoro count must be at least 1", 400)
+        
+        return render_template("task.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
