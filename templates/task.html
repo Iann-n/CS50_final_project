@@ -61,7 +61,8 @@ Task Tracker
 <!-- Popup form -->
 <div id="popupOverlay" onclick="closeTaskPopup()"></div>
 <div id="taskPopup">
-  <form action="/addtask" method="post" class="standard-container">
+  <form action="/addtask" method="post" class="standard-container" id="taskFormPopup">
+    <input type="hidden" id="dayIndexInput" name="day_index" value="">
     <h3>Add New Task</h3>
     <div style="display:flex; flex-direction:column; justify-content: flex-start; gap: 10px;">
         <div>
@@ -77,7 +78,7 @@ Task Tracker
     </div>
 
     <div style="display: flex; flex-direction: row; gap: 20px; justify-content: flex-start;">
-        <button id ="addTaskPopup" onclick="addTask()" class="submit-button" type="submit">Add</button>
+        <button id ="addTaskPopup" class="submit-button" type="submit">Add</button>
         <button id="closeTaskPopup"onclick="closeTaskPopup()" class="submit-button" type="button">Cancel</button>
     </div>
 

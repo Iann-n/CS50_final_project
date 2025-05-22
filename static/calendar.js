@@ -131,29 +131,83 @@ console.log(curMonth);
 
 
 // Implementing opertaion to show popup
-addTaskButton = document.querySelectorAll('.add-task');
+let selectedDayIndex = null;
 removePopup = document.getElementById("closeTaskPopup");
 addTaskPopup = document.getElementById("addTaskPopup");
+taskFormPopup = document.getElementById("taskFormPopup")
 
-addTaskButton.forEach( button => {
-  button.addEventListener("click", () => {
+document.querySelectorAll(".add-task").forEach(button => {
+  button.addEventListener("click", function () {
+    // Show the popup
     document.getElementById("taskPopup").style.display = "block";
     document.getElementById("popupOverlay").style.display = "block";
+
+    // Get column index from parent
+    const column = this.closest(".day-column");
+    selectedDayIndex = column.getAttribute("data-index");
+
+    document.getElementById("dayIndexInput").value = selectedDayIndex;
   });
 });
 
 function closeTaskPopup() {
   document.getElementById("taskPopup").style.display = "none";
   document.getElementById("popupOverlay").style.display = "none";
+  selectedDayIndex = null;
 }
 
 removePopup.addEventListener("click", closeTaskPopup);
 
 function addTask() {
-  const taskName = document.getElementById("taskNameInput").value; 
-  const noPomodoros = document.getElementById("pomoCountInput").value;
 
+
+  // Create a new task div
+  const taskDiv = document.createElement("div");
+  taskDiv.innerHTML = 
+  `<span>${taskName}</span>
+  <p> Pomodoros: ${noPomodoros}</p>`;
+
+  // Insert the task div into the correct column above the add task button
+  const targetColumn = document.querySelector(`.day-column[data-index="${selectedDayIndex}"]`)
+  const addButton = targetColumn.querySelector(".add-task");
+  targetColumn.insertBefore(taskDiv, addButton);
+
+  // Clear inputs and close popup
+  document.getElementById('taskNameInput').value = '';
+  document.getElementById('pomoCountInput').value = 1;
+  closeTaskPopup();
 }
 
+taskFormPopup.addEventListener("submit", async function (e) {
+  e.preventDefault(); // Prevent the form from submitting normally
+
+  const taskName = document.getElementById("taskNameInput").value.trim(); 
+  const noPomodoros = document.getElementById("pomoCountInput").value;
+  const taskDayIdx = document.getElementById("dayIndexInput").value;
+
+  // Create a json object to send to flask serverside
+  const response = await fetch('/addtask', {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      task_name: taskName,
+      pomodoro_count: noPomodoros,
+      day_index: taskDayIdx,
+    }),
+  });
+
+  const data = await response.json();
+  console.log(data);
+  if (data.success) {
+    addTask();
+    alert("Task added successfully!");
+  }
+  else {
+    alert("Failed to add task. Please try again.")
+  }
+
+})
 
 });

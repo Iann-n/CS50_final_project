@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, jsonify
 from flask_session import Session
 import sqlite3
 from hashlib import sha512
@@ -132,8 +132,11 @@ def task():
 @app.route("/addtask", methods=["GET", "POST"])
 def add_task():
     if request.method == "POST":
-        task = request.form.get("task_name")
-        pomocount = request.form.get("pomodoro_count")
+        data = request.get_json()
+        task = data.get("task_name")
+        pomocount = int(data.get("pomodoro_count")) + 1
+        day_idx = int(data.get("day_index"))
+        print(f" DEBUG STATEMENT TO FIND ERROR: {task}, {pomocount}, {day_idx}")
 
         if not task:
             return apology("Please provide a task name", 400)
@@ -141,6 +144,16 @@ def add_task():
         if pomocount < 1:
             return apology("Pomodoro count must be at least 1", 400)
         
+        db = get_db_connection()
+        cursor = db.cursor()
+        cursor.execute("INSERT INTO tasks (user_id, task, pomocount, day) VALUES (?, ?, ?, ?)", (session["user_id"], task, pomocount, day_idx))
+        db.commit()
+        cursor.close()
+        db.close()
+        
+        # Send the json file to the frontend to ensure everything is working
+        return jsonify({"success": True, "message": "Task added successfully!"})
+    else:
         return render_template("task.html")
 
 if __name__ == "__main__":
