@@ -178,5 +178,20 @@ def delete_task():
 
         return jsonify({"success": True, "message": "Task successfully deleted!"})
         
+@app.route("/gettask")
+def gettask():
+    db = get_db_connection()
+    cursor = db.cursor()
+    tasks = cursor.execute("SELECT id, task, pomocount, day FROM tasks WHERE user_id = ?", (session["user_id"],)).fetchall()
+    cursor.close()
+    db.close()
+
+    # Convert to dic list
+    task_list = [
+        {"id": row["id"], "task": row["task"], "pomocount": row["pomocount"], "day": row["day"]}
+        for row in tasks
+    ]
+    return jsonify({"success": True, "tasks": task_list})
+
 if __name__ == "__main__":
     app.run(debug=True)

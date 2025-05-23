@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+
     // Initializing variables
     let currentDate = new Date(); // Calls the instructor function to return the date instance which is allowed due to new
     day = currentDate.getDay();
@@ -252,4 +252,22 @@ taskFormPopup.addEventListener("submit", async function (e) {
   }
 })
 
+
+
+window.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const response = await fetch("/gettask");
+    const data = await response.json();
+
+    if (data.success) {
+      data.tasks.forEach(task => {
+        addTask(task.task, task.pomocount, task.day, task.id);  // reuse your existing function
+      });
+    } else {
+      alert("Failed to load tasks.");
+    }
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    alert("Error loading tasks")
+  }
 });
