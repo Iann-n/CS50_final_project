@@ -182,7 +182,7 @@ main{
 .day-column:hover {
     box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
     z-index: 2;
-    transform: scale(1.05);
+    transform: scale(1.05)
 }
 
 .add-task {
@@ -247,6 +247,19 @@ main{
     gap: 15px;
 }
 
+.task-div {
+    padding: 10px;
+    transition: 0.2s ease;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.task-div:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+    background-color: #8a3333;
+               
+}
 /* For login.html */
 .login-container {
     height: 100vh;

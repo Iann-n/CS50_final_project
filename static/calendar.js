@@ -158,15 +158,57 @@ function closeTaskPopup() {
 
 removePopup.addEventListener("click", closeTaskPopup);
 
-function addTask() {
-
-
+function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
   // Create a new task div
   const taskDiv = document.createElement("div");
+  taskDiv.className = "task-div";
   taskDiv.innerHTML = 
   `<span>${taskName}</span>
-  <p> Pomodoros: ${noPomodoros}</p>`;
+  <p> Pomodoros: ${noPomodoros}</p>
+  <button class="deleteTaskButton">delete task</button>`;
 
+  const deleteTaskButton = taskDiv.querySelector(".deleteTaskButton");
+
+  // Initially hide the button via CSS (not with inline style)
+  deleteTaskButton.style.opacity = "0";
+  deleteTaskButton.style.visibility = "hidden";
+  deleteTaskButton.style.transition = "opacity 0.3s ease, visibility 0.3s ease";
+
+  // Show button on hover (only for this taskDiv)
+  taskDiv.addEventListener("mouseenter", () => {
+    deleteTaskButton.style.opacity = "1";
+    deleteTaskButton.style.visibility = "visible";
+  });
+  taskDiv.addEventListener("mouseleave", () => {
+    deleteTaskButton.style.opacity = "0";
+    deleteTaskButton.style.visibility = "hidden";
+  });
+
+  // Add event listener to delete button
+  deleteTaskButton.addEventListener("click", async () => {
+    try {
+    const response = await fetch ('/deletetask', {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        task_id : taskId,
+      }),
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      taskDiv.remove();  
+      alert("Task deleted successfully.");
+    } else {
+      alert("Failed to delete task.");
+    }}
+      catch (error) {
+    console.error("Error deleting task:", error);
+    alert("An error occurred.");
+      }
+  })
   // Insert the task div into the correct column above the add task button
   const targetColumn = document.querySelector(`.day-column[data-index="${selectedDayIndex}"]`)
   const addButton = targetColumn.querySelector(".add-task");
@@ -183,7 +225,7 @@ taskFormPopup.addEventListener("submit", async function (e) {
 
   const taskName = document.getElementById("taskNameInput").value.trim(); 
   const noPomodoros = document.getElementById("pomoCountInput").value;
-  const taskDayIdx = document.getElementById("dayIndexInput").value;
+  const taskDayIdx = parseInt(document.getElementById("dayIndexInput").value);
 
   // Create a json object to send to flask serverside
   const response = await fetch('/addtask', {
@@ -201,13 +243,13 @@ taskFormPopup.addEventListener("submit", async function (e) {
   const data = await response.json();
   console.log(data);
   if (data.success) {
-    addTask();
+    taskId = data.task_id;
+    addTask(taskName, noPomodoros, taskDayIdx, taskId);
     alert("Task added successfully!");
   }
   else {
     alert("Failed to add task. Please try again.")
   }
-
 })
 
 });

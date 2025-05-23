@@ -134,8 +134,8 @@ def add_task():
     if request.method == "POST":
         data = request.get_json()
         task = data.get("task_name")
-        pomocount = int(data.get("pomodoro_count")) + 1
-        day_idx = int(data.get("day_index"))
+        pomocount = int(data.get("pomodoro_count")) 
+        day_idx = int(data.get("day_index")) + 1
         print(f" DEBUG STATEMENT TO FIND ERROR: {task}, {pomocount}, {day_idx}")
 
         if not task:
@@ -148,13 +148,35 @@ def add_task():
         cursor = db.cursor()
         cursor.execute("INSERT INTO tasks (user_id, task, pomocount, day) VALUES (?, ?, ?, ?)", (session["user_id"], task, pomocount, day_idx))
         db.commit()
+        task_id = cursor.lastrowid # Give me the id of the last row inserted
+        print(f"TASK ID DEBUG: {task_id}")
         cursor.close()
         db.close()
         
         # Send the json file to the frontend to ensure everything is working
-        return jsonify({"success": True, "message": "Task added successfully!"})
+        return jsonify({"success": True, "message": "Task added successfully!", "task_id": task_id})
     else:
         return render_template("task.html")
 
+@app.route("/deletetask", methods=["DELETE"])
+def delete_task():
+    if request.method == "DELETE":
+        data = request.get_json()
+        task_id = data.get("task_id")
+
+        print(f"DEBUG STATEMENT TO FIND ERROR: {task_id}")
+
+        if not task_id:
+            return apology("Invalid task ID", 400)
+        
+        db = get_db_connection()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+        db.commit()
+        cursor.close()
+        db.close()
+
+        return jsonify({"success": True, "message": "Task successfully deleted!"})
+        
 if __name__ == "__main__":
     app.run(debug=True)
