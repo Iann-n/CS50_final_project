@@ -159,6 +159,7 @@ function closeTaskPopup() {
 removePopup.addEventListener("click", closeTaskPopup);
 
 function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
+  console.log(taskName, noPomodoros, selectedDayIndex, taskId)
   // Create a new task div
   const taskDiv = document.createElement("div");
   taskDiv.className = "task-div";
@@ -255,12 +256,15 @@ taskFormPopup.addEventListener("submit", async function (e) {
 
 
 window.addEventListener("DOMContentLoaded", async () => {
+  renderColumns();
+
   try {
     const response = await fetch("/gettask");
     const data = await response.json();
 
     if (data.success) {
       data.tasks.forEach(task => {
+        task.day -= 1;
         addTask(task.task, task.pomocount, task.day, task.id);  // reuse your existing function
       });
     } else {

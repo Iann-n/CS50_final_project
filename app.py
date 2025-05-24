@@ -51,7 +51,6 @@ def register():
         name = request.form.get("username")
         password = request.form.get("password")
         password_confirm = request.form.get("confirmation")
-        print(name, password, password_confirm)
 
         # Checks to avoid errors:
 
@@ -136,7 +135,6 @@ def add_task():
         task = data.get("task_name")
         pomocount = int(data.get("pomodoro_count")) 
         day_idx = int(data.get("day_index")) + 1
-        print(f" DEBUG STATEMENT TO FIND ERROR: {task}, {pomocount}, {day_idx}")
 
         if not task:
             return apology("Please provide a task name", 400)
@@ -163,8 +161,6 @@ def delete_task():
     if request.method == "DELETE":
         data = request.get_json()
         task_id = data.get("task_id")
-
-        print(f"DEBUG STATEMENT TO FIND ERROR: {task_id}")
 
         if not task_id:
             return apology("Invalid task ID", 400)

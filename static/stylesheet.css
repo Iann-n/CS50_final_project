@@ -160,6 +160,7 @@ main{
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-evenly;
+    align-items: flex-start;
     gap: 10px;
 
 }
@@ -173,7 +174,7 @@ main{
     padding: 16px;
     background-color: #f08a8a;
     border-radius: 10px;
-    height: 100%;
+    height: auto;
     overflow-y: auto;
     border: none;
     border-radius: 45px;
@@ -197,6 +198,13 @@ main{
     margin-top: 10px;
     font-size: 20px;
     cursor: pointer;
+    scale: 1.0;
+    transition: scale 0.2s ease;
+}
+
+.add-task:active {
+  scale: 0.92;
+  
 }
 
 #prevBtn, #nextBtn {
@@ -260,6 +268,20 @@ main{
     background-color: #8a3333;
                
 }
+
+.deleteTaskButton {
+  color: #000000;
+  font-size: 15px;
+  background: #e88383;
+  border: 1px solid #e88383;
+  cursor: pointer;
+  transform: scale(1);
+}
+
+.deleteTaskButton:active {
+  transform: scale(0.92);
+}
+
 /* For login.html */
 .login-container {
     height: 100vh;
