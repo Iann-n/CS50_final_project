@@ -173,7 +173,7 @@ function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
   // Initially hide the button via CSS (not with inline style)
   deleteTaskButton.style.opacity = "0";
   deleteTaskButton.style.visibility = "hidden";
-  deleteTaskButton.style.transition = "opacity 0.3s ease, visibility 0.3s ease";
+  deleteTaskButton.style.transition = "all 0.3s ease;";
 
   // Show button on hover (only for this taskDiv)
   taskDiv.addEventListener("mouseenter", () => {
