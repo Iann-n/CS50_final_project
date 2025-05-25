@@ -166,7 +166,7 @@ function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
   taskDiv.innerHTML = 
   `<span>${taskName}</span>
   <p> Pomodoros: ${noPomodoros}</p>
-  <button class="deleteTaskButton">delete task</button>`;
+  <button class="deleteTaskButton">delete</button>`;
 
   const deleteTaskButton = taskDiv.querySelector(".deleteTaskButton");
 

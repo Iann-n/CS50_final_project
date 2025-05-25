@@ -90,7 +90,7 @@ def register():
 
         cursor.close()
         db.close()
-        return redirect("/task")
+        return redirect("/task-tracker")
     else:
         return render_template("register.html")
 
@@ -120,13 +120,13 @@ def login():
         # Restore user session
         session["user_id"] = rows[0]["id"]
 
-        return redirect("/task")
+        return redirect("/task-tracker")
     else:
         return render_template("login.html")
     
-@app.route("/task", methods=["GET"])
-def task():
-    return render_template("task.html")
+@app.route("/task-tracker", methods=["GET"])
+def tasktracker():
+    return render_template("task-tracker.html")
 
 @app.route("/addtask", methods=["GET", "POST"])
 def add_task():
@@ -154,7 +154,7 @@ def add_task():
         # Send the json file to the frontend to ensure everything is working
         return jsonify({"success": True, "message": "Task added successfully!", "task_id": task_id})
     else:
-        return render_template("task.html")
+        return render_template("task-tracker.html")
 
 @app.route("/deletetask", methods=["DELETE"])
 def delete_task():
