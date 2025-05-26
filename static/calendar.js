@@ -215,6 +215,29 @@ function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
   const addButton = targetColumn.querySelector(".add-task");
   targetColumn.insertBefore(taskDiv, addButton);
 
+  taskDiv.addEventListener("click", async () => {
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/view-task";
+
+    const data = {
+      task_name: taskName,
+      no_pomodoros: noPomodoros,
+      day_idx: selectedDayIndex + 1,
+    };
+
+    for (const key in data) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = data[key];
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  })
+
   // Clear inputs and close popup
   document.getElementById('taskNameInput').value = '';
   document.getElementById('pomoCountInput').value = 1;

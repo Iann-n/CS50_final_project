@@ -63,16 +63,14 @@ Task Tracker
 <div id="taskPopup">
   <form action="/addtask" method="post" class="standard-container" id="taskFormPopup">
     <input type="hidden" id="dayIndexInput" name="day_index" value="">
-    <h3>Add New Task</h3>
+    <h3 class="outfit-regular" style="color: black">Add New Task</h3>
     <div style="display:flex; flex-direction:column; justify-content: flex-start; gap: 10px;">
         <div>
-            <label>Task Name:</label>
-            <input type="text" id="taskNameInput" class="input-field" name="task_name" style="margin-left: 40px;">
+            <label class="outfit-regular" style="color: #afaeb4; font-size: 20px;">Task Name:</label>
+            <input type="text" id="taskNameInput" class="input-field" name="task_name" style="margin-left: 53px;">
         </div>
-
-
         <div>
-            <label>Pomodoro Cycles:</label>
+            <label class="outfit-regular" style="color: #afaeb4; font-size: 20px;">Pomodoro Cycles:</label>
             <input type="number" id="pomoCountInput" min="1" value="1" class="input-field" name="pomodoro_count">
         </div>
     </div>
@@ -87,3 +85,6 @@ Task Tracker
 
 {% endblock %}
 
+{% block footer %}
+<script src="/static/calendar.js"></script>
+{% endblock %}

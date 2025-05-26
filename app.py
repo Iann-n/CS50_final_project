@@ -189,5 +189,13 @@ def gettask():
     ]
     return jsonify({"success": True, "tasks": task_list})
 
+@app.route("/view-task", methods=["POST"])
+def viewtask():
+    if request.method == "POST":
+        task_name = request.form.get("task_name")
+        pomocount = request.form.get("no_pomodoros")
+        day_idx = request.form.get("day_idx")
+
+    return render_template("task.html", taskname=task_name)
 if __name__ == "__main__":
     app.run(debug=True)
