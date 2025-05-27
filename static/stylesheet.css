@@ -311,7 +311,7 @@ form {
 .input-field:focus {
   background-color: #f5f7fc;
   transform: scale(1.05);
-
+  border: 1.5px solid black;
 }
 
 .submit-button {
@@ -417,6 +417,20 @@ a:hover {
   background-color: #4caf50;
   width: 0%;
   transform-origin: left; 
+}
+
+.shortBreak-bar {
+    background-color: cyan;
+    height: 20px;
+    width: 0%;
+    transform-origin: right;
+}
+
+.longBreak-bar {
+    background-color: navy;
+    height: 20px;
+    width: 0%;
+    transform-origin: right;
 }
 
 .pomodoro-button {

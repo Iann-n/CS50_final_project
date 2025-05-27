@@ -10,11 +10,14 @@ Task {{taskname}}
     <div class="pomodoro">
         <div class="progress-container">
             <div class="progress-bar"></div>
+            <div class="shortBreak-bar"></div>
+            <div class="longBreak-bar"></div>
         </div>
         <div id="timer-display" class="outfit-regular" style="font-size:20px; color: white">25:00</div>
         <div class="pomodoro-buttons">
         <button class="pomodoro-button" id="editPomodoro">Edit</button>
         <button class="pomodoro-button" id="startStopPomodoro">Start/Stop</button>
+        <button class="pomodoro-button" id="resetPomodoro">Reset</button>
         </div>
     </div>
 </div>
@@ -22,27 +25,27 @@ Task {{taskname}}
 <!-- Popup form -->
 <div id="popupOverlay" onclick="closeTaskPopup()"></div>
 <div id="pomodoroPopup">
-    <form action="/editpomodoro" method="post" class="standard-container" id="pomodoro-input-form">
+    <form action="/editpomodoro" method="post" class="standard-container" id="pomodoroSettingsForm">
         <h3 class="outfit-regular" style="color: black">Edit pomodoro settings</h3>
         <div style="display:flex; flex-direction: column; gap:20px;">
             <div style="display:flex; flex-direction:row; justify-content: space-evenly; align-items: center; gap: 10px;">
                 <div class="pomo-input">
                 <label class="outfit-regular" style="color: #afaeb4; font-size: 15px;">Pomodoro</label>
-                <input type="number" class="input-field"  size="10">
+                <input type="number" class="input-field" size="10" value="25" min="1" id="pomoTime">
                 </div>
                 
                 <div class="pomo-input">
                 <label class="outfit-regular" style="color: #afaeb4; font-size: 15px;">Short Break</label>
-                <input type="number" class="input-field"  size="10">
+                <input type="number" class="input-field" size="10" value="5" min="1" id="shortBreakTime">
                 </div>
 
                 <div class="pomo-input">
                 <label class="outfit-regular" style="color: #afaeb4; font-size: 15px;">Long Break</label>
-                <input type="number" class="input-field"  size="10">
+                <input type="number" class="input-field" size="10" value="15" min="1" id="longBreakTime">
                 </div>
             </div>
             <div style="display: flex; flex-direction: row; gap: 20px; justify-content: space-evenly;">
-                <button id ="addTaskPopup" class="submit-button" type="submit">Edit</button>
+                <button id ="editPomodoroSettings" class="submit-button" type="submit">Edit</button>
                 <button id="closeTaskPopup" class="submit-button" type="button">Cancel</button>
             </div>
         </div>
@@ -51,5 +54,6 @@ Task {{taskname}}
 {% endblock %}
 
 {% block footer %}
+<script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
 <script src="/static/pomodoro.js"></script>
 {% endblock %}
