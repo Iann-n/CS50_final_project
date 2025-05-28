@@ -138,6 +138,7 @@ taskFormPopup = document.getElementById("taskFormPopup")
 
 document.querySelectorAll(".add-task").forEach(button => {
   button.addEventListener("click", function () {
+    new Audio('/static/button-click.mp3').play();
     // Show the popup
     document.getElementById("taskPopup").style.display = "block";
     document.getElementById("popupOverlay").style.display = "block";
@@ -186,7 +187,9 @@ function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
   });
 
   // Add event listener to delete button
-  deleteTaskButton.addEventListener("click", async () => {
+  deleteTaskButton.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    new Audio('/static/button-click.mp3').play()
     try {
     const response = await fetch ('/deletetask', {
       method: 'DELETE',
