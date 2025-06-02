@@ -1,14 +1,355 @@
-//Implementing operation to open popup
+const currentTask = JSON.parse(localStorage.getItem("currentTask"));
+if (currentTask) {
+    taskId = currentTask.taskId;
+    noPomodoros = parseInt(currentTask.noPomodoros);
+    taskName = currentTask.noPomodoros;
+}
+console.log(taskId, noPomodoros, taskName);
 
-editButton = document.getElementById('editPomodoro');
-removePopup = document.getElementById('closeTaskPopup')
+for (let i = 1; i <= noPomodoros; i++) {
+    const pomodoroDiv = document.createElement("div")
+    pomodoroDiv.className = "pomodoro"
+    pomodoroDiv.dataset.index = i
+    pomodoroDiv.innerHTML = 
+    ` 
+            <div class="progress-container">
+                <div class="progress-bar"></div>
+                <div class="shortBreak-bar"></div>
+                <div class="longBreak-bar"></div>
+            </div>
+            <div class="outfit-regular timer-type">Pomodoro</div>
+            <div class="outfit-regular timer-display" style="font-size:20px; color: white">25:00</div>
+            <div class="pomodoro-buttons">
+                <button class="pomodoro-button editPomodoro">Edit</button>
+                <button class="pomodoro-button startStopPomodoro">Start/Stop</button>
+                <button class="pomodoro-button resetPomodoro">Reset</button>
+            </div>
+`;
+    
+    document.querySelector(".pomodoro-container").append(pomodoroDiv);
+}
 
-editButton.addEventListener("click", () => {
-    // Show the popup
-    new Audio('/static/button-click.mp3').play();
-    document.getElementById("pomodoroPopup").style.display = "block";
-    document.getElementById("popupOverlay").style.display = "block";
+let activePomodoroInstance = null;
+let pomoCount = 1
+class PomodoroTimer {
+  constructor(containerElement) {
+    this.container = containerElement;
+    this.progressBar = containerElement.querySelector('.progress-bar');
+    this.shortBreakBar = containerElement.querySelector('.shortBreak-bar');
+    this.longBreakBar = containerElement.querySelector('.longBreak-bar');
+    this.timerDisplay = containerElement.querySelector('#timer-display');
+    this.timerType = containerElement.querySelector('#timer-type');
+
+    this.pomodoroTime = 25 * 60;
+    this.shortBreakTime = 5 * 60;
+    this.longBreakTime = 15 * 60; 
+
+    // Bind buttons
+    this.container.querySelector('.startStopPomodoro').addEventListener('click', () => {
+        new Audio('/static/button-click.mp3').play();
+        this.startStopPomodorofunc()
+    });
+    this.container.querySelector('.resetPomodoro').addEventListener('click', () => {
+        new Audio('/static/button-click.mp3').play();
+        this.resetPomodoro()
+    });
+    this.container.querySelector('.editPomodoro').addEventListener('click', () => {
+        new Audio('/static/button-click.mp3').play();
+        activePomodoroInstance = this;
+        document.getElementById("pomodoroPopup").style.display = "block";
+        document.getElementById("popupOverlay").style.display = "block";
+        document.getElementById("pomoTime").value = "25";
+        document.getElementById("shortBreakTime").value = "5";
+        document.getElementById("longBreakTime").value = "15";
+    })
+
+    // State
+    this.elapsedTime = 0;
+    this.duration = this.pomodoroTime;
+    this.ispaused = false;
+    this.isrunning = false;
+    this.isBreak = false;
+    this.countdownInterval = null;
+    this.startTimeStamp = null;
+
+    this.timerDisplay = containerElement.querySelector('.timer-display');
+    this.timerType = containerElement.querySelector('.timer-type');
+    
+  }
+
+    formatTime(seconds) {
+        const min = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+        return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+
+    startStopPomodorofunc() {
+        // For first time running task timer
+        if (!this.isrunning && !this.ispaused && !this.isBreak && this.elapsedTime === 0) {
+            this.duration = this.pomodoroTime;
+            this.isrunning = true;
+            this.startTimeStamp = Date.now();
+            this.progressBar.style.display = "block";
+            this.shortBreakBar.style.display = "none";
+            this.longBreakBar.style.display = "none";
+            this.runTimer();
+            alert("Pomodoro is starting")
+            return; 
+        }
+
+        // For running the break timer
+        if (!this.isrunning && !this.ispaused && this.isBreak && this.elapsedTime === 0) {
+            this.isrunning = true;
+            this.startTimeStamp = Date.now();
+
+            if (pomoCount % 4 !== 0) {
+            alert("Short Break Initializing");
+            this.progressBar.style.display = "none";
+            this.shortBreakBar.style.display = "block";
+            this.longBreakBar.style.display = "none";
+            this.duration = this.shortBreakTime;
+            this.runTimer();
+            return;
+            }
+
+            else if (pomoCount % 4 === 0) {
+            alert("Long Break Initializing");
+            this.progressBar.style.display = "none";
+            this.shortBreakBar.style.display = "none";
+            this.longBreakBar.style.display = "block";
+            this.duration = this.longBreakTime;
+            this.runTimer();
+            return;
+            }
+        }
+
+        // To pause the timer
+        if (!this.ispaused && this.isrunning) {
+            this.ispaused = true;
+            this.isrunning = false;
+            clearInterval(this.countdownInterval);
+            this.elapsedTime = Math.floor((Date.now() - this.startTimeStamp) / 1000)
+            this.progressBar.style.transition = "none";
+            this.progressBar.style.transform = `scaleX(${(this.elapsedTime / this.duration)})`
+            this.timerDisplay.textContent = this.formatTime(this.duration - this.elapsedTime);
+            alert("Pomodoro is paused")
+            return;
+        }
+
+        // To resume the timer
+        if (!this.isrunning && this.ispaused) {
+            this.ispaused = false;
+            this.isrunning = true;
+            this.startTimeStamp = Date.now() - this.elapsedTime * 1000;
+            this.runTimer();
+            alert("Pomodoro is resumed")
+            return;
+        }
+    }
+
+    updateUI() {
+        const now = Date.now();
+        if (this.startTimeStamp && this.isrunning && !this.ispaused) {
+            this.elapsedTime = Math.floor((now - this.startTimeStamp) / 1000);
+        }
+        this.remainingTime = Math.max(0, Math.floor(this.duration - this.elapsedTime));
+        this.timerDisplay.textContent = this.formatTime(this.remainingTime);
+
+        const percent = Math.min(this.elapsedTime / this.duration, 1);
+
+        if (!this.isBreak) {
+            this.progressBar.style.transform = `scaleX(${percent})`;
+            this.progressBar.style.transition = "transform 1s linear";
+            this.timerType.textContent = "Pomodoro";
+        } else {
+            if (pomoCount % 4 === 0) {
+                this.longBreakBar.style.transform = `scaleX(${percent})`;
+                this.longBreakBar.style.transition = "transform 1s linear";
+                this.timerType.textContent = "Long Break";
+
+            } if (pomoCount % 4 !== 0) {
+                this.shortBreakBar.style.transform = `scaleX(${percent})`;
+                this.shortBreakBar.style.transition = "transform 1s linear";
+                this.timerType.textContent = "Short Break";
+            }
+        }
+    }
+
+    runTimer() {
+        clearInterval(this.countdownInterval);
+
+        this.updateUI(); // Show initial state before ticking
+
+        this.countdownInterval = setInterval(() => {
+            if (this.ispaused || !this.isrunning) return;
+
+            this.updateUI();  
+            
+            if (this.elapsedTime >= this.duration && !this.isBreak) {
+                    this.isBreak = true;
+                    this.ispaused = false
+                    this.isrunning = false;
+                    this.elapsedTime = 0;
+
+                    clearInterval(this.countdownInterval); 
+                    this.progressBar.style.transform = "scaleX(1)";
+                    this.progressBar.style.transition = "transform 1s linear";
+
+                    setTimeout(() => {
+                        new Audio('/static/yay.mp3').play();
+                        triggerConfetti();
+                        // Reset UI
+                        this.progressBar.style.display = "none";
+                        this.shortBreakBar.style.display = "none";
+                        this.longBreakBar.style.display = "none";
+                        this.updateUI();
+                    }, 1000);
+            } 
+            else if (this.elapsedTime >= this.duration && this.isBreak) {
+                this.isrunning = false;
+                this.isBreak = false;
+                this.ispaused = false;
+                this.elapsedTime = 0;
+                this.duration = 0;
+                pomoCount ++;
+                console.log(pomoCount)
+                this.timerType.textContent = "Pomdoro Completed"
+                clearInterval(this.countdownInterval); 
+                const pomodoroWrapper = document.querySelector(`[data-index="${pomoCount - 1}"]`);
+                pomodoroWrapper.classList.add("fade-out"); // its automatically triggered the fading operation 
+                updatePomodoroIndex();
+                new Audio("/static/timer ring.wav").play();
+                setTimeout(() => {
+                    // Reset UI
+                    this.progressBar.style.display = "none";
+                    this.shortBreakBar.style.display = "none";
+                    this.longBreakBar.style.display = "none";
+                    pomodoroWrapper.remove(); 
+
+                    this.updateUI();
+                }, 1000);
+                this.updateUI();
+
+                if ((pomoCount - 1) === noPomodoros && !document.getElementById("completionMessage")) {
+                    triggerMessage();
+                }
+                }
+        }, 1000);
+        this.updateUI();
+    }
+    resetPomodoro() {
+        this.isrunning = false;
+        this.progressBar.style.transition = "none";
+        this.progressBar.style.transform = "scaleX(0)";
+        this.elapsedTime = 0;
+        
+        // trigger reflow
+        this.progressBar.offsetWidth; 
+        this.displayTime = this.formatTime(this.pomodoroTime);
+        this.timerDisplay.textContent = this.displayTime;
+        alert("Pomodoro timer resetted")
+    } 
+  }
+
+const pomodoroDivs = document.querySelectorAll(".pomodoro");
+pomodoroDivs.forEach((el) => {
+    new PomodoroTimer(el);
 })
+
+// Initializing pomodoro index
+    function updatePomodoroIndex() {
+        const pomodoros = document.querySelectorAll("[data-index]")
+        console.log("noPomodoros =", noPomodoros);
+        console.log("Pomodoro Div =", pomodoros);
+
+        pomodoros.forEach((pomo) => {
+            index = parseInt(pomo.dataset.index, 10);
+            buttonDiv = pomo.querySelector(".pomodoro-buttons, .pomodoro-buttons-inactive");
+
+            console.log(`Checking pomo with index=${pomo.dataset.index}`);
+            console.log("Pomodoro Div ClassList before:", pomo.classList);
+            console.log("Buttons Div ClassList before:", buttonDiv.classList);
+
+            if (index !== pomoCount) {
+                pomo.classList.add("pomodoro-inactive");
+                pomo.classList.remove("pomodoro");
+                buttonDiv.classList.add("pomodoro-buttons-inactive");
+                buttonDiv.classList.remove("pomodoro-buttons");
+            }
+            
+            else if (index === pomoCount) {
+                pomo.classList.add("pomodoro");
+                pomo.classList.remove("pomodoro-inactive");
+                buttonDiv.classList.add("pomodoro-buttons");
+                buttonDiv.classList.remove("pomodoro-buttons-inactive");
+            }
+            console.log("Pomodoro Div ClassList after:", pomo.classList);
+            console.log("Buttons Div ClassList after:", buttonDiv.classList);
+            console.log("Pomodoro Index: ",pomoCount)
+        });
+    }
+updatePomodoroIndex();
+
+//Implementing operation to open and close popups and buttons in popups
+
+const editPomoBtn = document.getElementById('editPomodoroSettings');
+editPomoBtn.addEventListener('click', (event) => {
+
+    event.preventDefault();
+
+    const pomoMin = parseInt(document.getElementById('pomoTime').value, 10);
+    const shortBreakMin = parseInt(document.getElementById('shortBreakTime').value, 10);
+    const longBreakMin = parseInt(document.getElementById('longBreakTime').value, 10);
+
+    if (activePomodoroInstance) {
+            clearInterval(activePomodoroInstance.countdownInterval);
+        activePomodoroInstance.progressBar.style.transition = "none";
+        activePomodoroInstance.progressBar.style.transform = "scaleX(0)";
+        activePomodoroInstance.isrunning = false;
+        activePomodoroInstance.elapsedTime = 0;
+        
+        activePomodoroInstance.pomodoroTime = pomoMin * 60;
+        activePomodoroInstance.shortBreakTime = shortBreakMin * 60;
+        activePomodoroInstance.longBreakTime = longBreakMin * 60;
+
+        activePomodoroInstance.duration = activePomodoroInstance.pomodoroTime;
+        activePomodoroInstance.timerDisplay.textContent = 
+            activePomodoroInstance.formatTime(activePomodoroInstance.pomodoroTime);
+    }
+
+    if (isNaN(pomoMin) || isNaN(shortBreakMin) || isNaN(longBreakMin)) {
+        alert("Please enter valid numbers for all times.");
+        return;
+    }
+
+    if (activePomodoroInstance) {
+        // Pause and reset current instance
+        clearInterval(activePomodoroInstance.countdownInterval);
+        activePomodoroInstance.isrunning = false;
+        activePomodoroInstance.ispaused = false;
+        activePomodoroInstance.elapsedTime = 0;
+
+        // Reset progress bars
+        activePomodoroInstance.progressBar.style.transition = "none";
+        activePomodoroInstance.progressBar.style.transform = "scaleX(0)";
+        activePomodoroInstance.shortBreakBar.style.transition = "none";
+        activePomodoroInstance.shortBreakBar.style.transform = "scaleX(0)";
+        activePomodoroInstance.longBreakBar.style.transition = "none";
+        activePomodoroInstance.longBreakBar.style.transform = "scaleX(0)";
+
+        // Update times
+        activePomodoroInstance.pomodoroTime = pomoMin * 60;
+        activePomodoroInstance.shortBreakTime = shortBreakMin * 60;
+        activePomodoroInstance.longBreakTime = longBreakMin * 60;
+
+        activePomodoroInstance.duration = activePomodoroInstance.pomodoroTime;
+        activePomodoroInstance.timerDisplay.textContent =
+            activePomodoroInstance.formatTime(activePomodoroInstance.pomodoroTime);
+    }
+    closeTaskPopup();
+})
+
+removePopup = document.getElementById('closeTaskPopup')
 
 function closeTaskPopup() {
   document.getElementById("pomodoroPopup").style.display = "none";
@@ -16,221 +357,6 @@ function closeTaskPopup() {
 }
 
 removePopup.addEventListener('click', closeTaskPopup)
-
-// Executing pomodoro workflow
-
-let pomodoroTime = 25 * 60;
-let shortBreakTime = 5 * 60;
-let longBreakTime = 15 * 60; 
-let progressBar = document.querySelector('.progress-bar');
-let shortBreakBar = document.querySelector('.shortBreak-bar');
-let longBreakBar = document.querySelector('.longBreak-bar');
-let timerDisplay = document.getElementById('timer-display')
-let startTime = 0;
-let elapsedTime = 0;
-let ispaused = false;
-let isrunning = false;
-let countdownInterval;
-let pomoCount = 1;
-let isBreak = false;
-
-const editPomoBtn = document.getElementById('editPomodoroSettings');
-editPomoBtn.addEventListener('click', (event) => {
-
-    event.preventDefault();
-    clearInterval(countdownInterval);
-    progressBar.style.transition = "none";
-    progressBar.style.transform = "scaleX(0)";
-    isrunning = false;
-    elapsedTime = 0;
-
-    const pomoMin = parseInt(document.getElementById('pomoTime').value, 10);
-    const shortBreakMin = parseInt(document.getElementById('shortBreakTime').value, 10);
-    const longBreakMin = parseInt(document.getElementById('longBreakTime').value, 10);
-
-    if (isNaN(pomoMin) || isNaN(shortBreakMin) || isNaN(longBreakMin)) {
-        alert("Please enter valid numbers for all times.");
-        return;
-    }
-
-    pomodoroTime = pomoMin * 60;
-    shortBreakTime = shortBreakMin * 60;
-    longBreakTime = longBreakMin * 60;
-    duration = pomodoroTime;
-    timerDisplay.textContent = formatTime(pomodoroTime);
-    closeTaskPopup();
-    return pomodoroTime, shortBreakTime, longBreakTime;
-})
-
-function formatTime(seconds) {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-}
-
-function startStopPomodorofunc() {
-    // For first time running task timer
-    if (!isrunning && !ispaused && !isBreak && elapsedTime === 0) {
-        duration = pomodoroTime;
-        isrunning = true;
-        progressBar.style.display = "block";
-        shortBreakBar.style.display = "none";
-        longBreakBar.style.display = "none";
-        console.log(progressBar)
-        runTimer();
-        alert("Pomodoro is starting")
-        return; 
-    }
-    console.log("Checking break start condition", {
-    isrunning, ispaused, isBreak, elapsedTime, pomoCount
-    });
-    // For running the break timer
-    if (!isrunning && !ispaused && isBreak && elapsedTime === 0) {
-        isrunning = true;
-        if (pomoCount % 4 !== 0) {
-        alert("Short Break Initializing");
-        progressBar.style.display = "none";
-        shortBreakBar.style.display = "block";
-        longBreakBar.style.display = "none";
-        duration = shortBreakTime;
-        console.log(isBreak, ispaused, isrunning, elapsedTime, pomoCount, 1%4);
-        runTimer();
-        return;
-        }
-
-        else if (pomoCount % 4 === 0) {
-        alert("Long Break Initializing");
-        progressBar.style.display = "none";
-        shortBreakBar.style.display = "none";
-        longBreakBar.style.display = "block";
-        duration = longBreakTime;
-        runTimer();
-        return;
-        }
-    }
-
-    // To pause the timer
-    if (!ispaused && isrunning) {
-        console.log("PAUSING TRIGGERED")
-        ispaused = true;
-        isrunning = false;
-        clearInterval(countdownInterval);
-        progressBar.style.transition = "none";
-        progressBar.style.transform = `scaleX(${(elapsedTime / duration)})`
-        timerDisplay.textContent = formatTime(duration - elapsedTime);
-        alert("Pomodoro is paused")
-        return;
-    }
-
-    // To resume the timer
-    if (!isrunning && ispaused) {
-        ispaused = false;
-        isrunning = true;
-        runTimer();
-        alert("Pomodoro is resumed")
-        return;
-    }
-}
-
-function updateUI() {
-    remainingTime = duration - elapsedTime;
-    timerDisplay.textContent = formatTime(remainingTime);
-    const percent = (elapsedTime / duration);
-
-    if (!isBreak) {
-        progressBar.style.transform = `scaleX(${percent})`;
-        progressBar.style.transition = "transform 1s linear";
-        document.getElementById("timer-type").textContent = "Pomodoro";
-    } else {
-        if (pomoCount % 4 === 0) {
-            longBreakBar.style.transform = `scaleX(${percent})`;
-            longBreakBar.style.transition = "transform 1s linear";
-            document.getElementById("timer-type").textContent = "Long Break";
-        } if (pomoCount % 4 !== 0) {
-            shortBreakBar.style.transform = `scaleX(${percent})`;
-            shortBreakBar.style.transition = "transform 1s linear";
-            document.getElementById("timer-type").textContent = "Short Break";
-        }
-    }
-}
-
-function runTimer() {
-    clearInterval(countdownInterval);
-
-    updateUI(); // Show initial state before ticking
-
-    countdownInterval = setInterval(() => {
-        if (!ispaused && isrunning && !isBreak) {
-            duration = pomodoroTime
-            elapsedTime++;
-            updateUI();
-        }
-
-        if (!ispaused && isrunning && isBreak && pomoCount % 4 !== 0) {
-            duration = shortBreakTime
-            elapsedTime++;
-            updateUI();
-        }
-
-        if (!ispaused && isrunning && isBreak && pomoCount % 4 === 0) {
-            duration = longBreakTime
-            elapsedTime++;
-            updateUI();
-        }
-        if (elapsedTime >= duration && isBreak) {
-            isrunning = false;
-            clearInterval(countdownInterval);
-            isBreak = false;     
-            ispaused = false;
-            elapsedTime = 0;
-            updateUI();
-        }
-
-        // End of timer for both pomodoro 
-        if (elapsedTime >= duration && !isBreak) {
-            isrunning = false;
-            clearInterval(countdownInterval); 
-                progressBar.style.transform = "scaleX(1)";
-                progressBar.style.transition = "transform 1s linear";
-
-                setTimeout(() => {
-                    new Audio('/static/yay.mp3').play();
-                    pomoCount++;
-                    triggerConfetti();
-                    isBreak = true;
-                    ispaused = false
-                    isrunning = false;
-                    elapsedTime = 0;
-
-                    // Reset UI
-                    progressBar.style.display = "none";
-                    shortBreakBar.style.display = "none";
-                    longBreakBar.style.display = "none";
-                    updateUI();
-                }, 1000);
-        }
-    }, 1000);
-}
-
-document.getElementById("resetPomodoro").addEventListener("click", () => {
-    new Audio('/static/button-click.mp3').play();
-    isrunning = false;
-    progressBar.style.transition = "none";
-    progressBar.style.width = 0;
-    elapsedTime = 0;
-    
-    // trigger reflow
-    progressBar.offsetWidth; 
-    displayTime = formatTime(pomodoroTime);
-    timerDisplay.textContent = displayTime;
-    alert("Pomodoro timer resetted")
-})
-
-startStopPomodoro = document.getElementById('startStopPomodoro');
-startStopPomodoro.addEventListener('click', () => {
-    new Audio('/static/button-click.mp3').play();
-    startStopPomodorofunc();
-});
 
 function triggerConfetti() {
     // 🎉 Confetti time!
@@ -274,3 +400,35 @@ function triggerConfetti() {
         startVelocity: 45,
     });
 }
+
+function triggerMessage() {
+    const messageDiv = document.createElement("div");
+    messageDiv.className = "outfit-regular";
+    messageDiv.innerHTML = "Task Completed!";
+    messageDiv.id = "completionMessage";
+    messageDiv.style.color = "white";
+    messageDiv.style.fontSize = "24px";
+    messageDiv.style.textAlign = "center";
+    messageDiv.style.marginTop = "20px";
+    document.querySelector(".pomodoro-container").prepend(messageDiv);
+}
+
+// Create back button and its functionalities
+const backButton = document.createElement("button");
+backButton.className = "pomodoro-button";
+backButton.innerHTML = "back";
+backButton.style.alignSelf = "center"; 
+backButton.style.flex = "0 0 auto";        // Don't grow or shrink, keep natural size
+document.querySelector(".pomodoro-container").append(backButton);
+
+backButton.addEventListener("click", () => {
+    remainingPomodoro = Math.max(0, noPomodoros - pomoCount); // Result clamped to 0
+        if (remainingPomodoro > 0) {
+        localStorage.setItem("currentTask", JSON.stringify({
+            taskName,
+            remainingPomodoro,
+            taskId
+        }));
+    }
+    window.location.href = "/task-tracker";
+})

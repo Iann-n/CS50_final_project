@@ -3,6 +3,27 @@
     padding: 0;
     box-sizing: border-box;
 }
+/* For scrollbar */
+
+/* width */
+::-webkit-scrollbar {
+  width:10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(244, 169, 169); 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
 /*This "*" sign is a universal selector, meaning it will select all classes, which includes my 2 column divs 
 so that they can expand to fill the entire page*/
 
@@ -228,7 +249,7 @@ main{
     padding:20px; 
     box-shadow:0px 0px 10px gray; 
     border-radius:8px; 
-    z-index:5;
+    z-index:7;
 }
 
 #popupOverlay {
@@ -239,7 +260,7 @@ main{
     height: 100%;
     width: 100%;
     background: rgba(0, 0, 0, 0.5); /* semi-transparent black */
-    z-index: 4; /* behind the popup */
+    z-index: 6; /* behind the popup */
 }
 
 #prevBtn:hover, #nextBtn:hover {
@@ -390,7 +411,19 @@ a:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px
+    gap: 10px;
+    opacity: 1;
+}
+
+.pomodoro-inactive {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.5;
+    cursor: pointer;
+    pointer-events: none;    
 }
 
 .pomodoro-buttons {
@@ -399,8 +432,20 @@ a:hover {
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
-
 }
+
+.pomodoro-buttons-inactive {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    cursor: pointer;
+    pointer-events: none;
+    opacity: 0.5;
+    
+}
+
 .progress-bar, .shortBreak-bar, .longBreak-bar {
   position: absolute; /* needed for z-index to work */
   top: 0;
@@ -472,4 +517,19 @@ a:hover {
 
 & input[type="number"] {
     width: 15ch;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.pomodoro-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    gap: 50px;
+    padding-bottom: 50px;
 }

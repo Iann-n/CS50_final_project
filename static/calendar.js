@@ -237,6 +237,12 @@ function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
       form.appendChild(input);
     }
 
+    localStorage.setItem("currentTask", JSON.stringify({
+      taskName,
+      noPomodoros,
+      taskId
+    }));
+
     document.body.appendChild(form);
     form.submit();
   })
