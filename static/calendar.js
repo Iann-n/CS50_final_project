@@ -59,14 +59,15 @@ nextBtn = document.getElementById("nextBtn");
 
 month = document.querySelectorAll(".month");
 dateElems = document.querySelectorAll(".date");
-console.log(month);
-console.log(date);
+
 function renderColumns() {
   const sunday = new Date(currentDate); // cloning current date to allow reproducability
   sunday.setDate(currentDate.getDate() - currentDate.getDay()); // Set base date to sunday so the rest of the dates could be easily looped
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Normalize today's date - ignore time component and ensure we only focus on the dates
 
+  document.querySelectorAll('.task-div').forEach(task => task.remove());
+  
   document.querySelectorAll('.date').forEach((el, i) => { //el = current DOM element being processed, i = index of element
     // Generate the date for this column
     const dayDate = new Date(sunday);
@@ -99,8 +100,6 @@ for (let i = 0; i < 7; i++) {
   dateItem.textContent = day;
   monthItem.textContent = currentMonth;
 
-  console.log(`Day ${i}: Date = ${day}, Month = ${currentMonth}`);
-
   if (day === 1 && currentMonth !== refmonth) {
     refmonth = currentMonth; // update reference month
     for (let j = i; j < month.length; j++) {
@@ -112,16 +111,18 @@ for (let i = 0; i < 7; i++) {
   })
 }
 
-prevBtn.addEventListener("click", () => {
+prevBtn.addEventListener("click", async () => {
   currentDate.setDate(currentDate.getDate() - 7);
   console.log("Previous week:", currentDate.toDateString());
   renderColumns();
+  await loadTasksForCurrentWeek();
 });
 
-nextBtn.addEventListener("click", () => {
+nextBtn.addEventListener("click", async () => {
   currentDate.setDate(currentDate.getDate() + 7);
   console.log("Next week:", currentDate.toDateString());
   renderColumns();
+  await loadTasksForCurrentWeek();
 });
 
 // Implementing algorithm to get month:
@@ -145,22 +146,27 @@ document.querySelectorAll(".add-task").forEach(button => {
 
     // Get column index from parent
     const column = this.closest(".day-column");
-    selectedDayIndex = column.getAttribute("data-index");
+    selectedMonthIndex = parseInt(column.querySelector(".month").textContent);
+    selectedDateIndex = parseInt(column.querySelector(".date").textContent);
 
-    document.getElementById("dayIndexInput").value = selectedDayIndex;
+    console.log(selectedMonthIndex, selectedDateIndex)
+
+    document.getElementById("monthIndexInput").value = selectedMonthIndex;
+    document.getElementById("dateIndexInput").value = selectedDateIndex;
   });
 });
 
 function closeTaskPopup() {
   document.getElementById("taskPopup").style.display = "none";
   document.getElementById("popupOverlay").style.display = "none";
-  selectedDayIndex = null;
+  selectedMonthIndex = null;
+  selectedDateIndex = null;
 }
 
 removePopup.addEventListener("click", closeTaskPopup);
 
-function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
-  console.log(taskName, noPomodoros, selectedDayIndex, taskId)
+function addTask(taskName, noPomodoros, selectedMonthIndex, selectedDateIndex, taskId) {
+  console.log(taskName, noPomodoros, selectedMonthIndex, selectedDateIndex, taskId)
   // Create a new task div
   const taskDiv = document.createElement("div");
   taskDiv.className = "task-div";
@@ -214,7 +220,28 @@ function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
       }
   })
   // Insert the task div into the correct column above the add task button
-  const targetColumn = document.querySelector(`.day-column[data-index="${selectedDayIndex}"]`)
+  const allColumns = document.querySelectorAll(".day-column");
+  let targetColumn = null;
+
+  allColumns.forEach(column => {
+    const datespan = column.querySelector(".date");
+    const monthspan = column.querySelector(".month");
+
+    if (datespan && monthspan) {
+      const columnDate = parseInt(datespan.textContent.trim());
+      const columnMonth = parseInt(monthspan.textContent.trim());
+
+      if (columnDate === selectedDateIndex && columnMonth === selectedMonthIndex) {
+        targetColumn = column;
+      }
+    }
+  })
+
+  if (!targetColumn) {
+    console.error("Target column not found for date:", selectedDateIndex, "month:", selectedMonthIndex);
+    return;
+  }
+
   const addButton = targetColumn.querySelector(".add-task");
   targetColumn.insertBefore(taskDiv, addButton);
 
@@ -226,7 +253,8 @@ function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
     const data = {
       task_name: taskName,
       no_pomodoros: noPomodoros,
-      day_idx: selectedDayIndex + 1,
+      date_idx: selectedDateIndex,
+      month_idx: selectedMonthIndex
     };
 
     for (const key in data) {
@@ -240,7 +268,9 @@ function addTask(taskName, noPomodoros, selectedDayIndex, taskId) {
     localStorage.setItem("currentTask", JSON.stringify({
       taskName,
       noPomodoros,
-      taskId
+      taskId,
+      date_idx: selectedDateIndex,
+      month_idx: selectedMonthIndex
     }));
 
     document.body.appendChild(form);
@@ -258,8 +288,13 @@ taskFormPopup.addEventListener("submit", async function (e) {
 
   const taskName = document.getElementById("taskNameInput").value.trim(); 
   const noPomodoros = document.getElementById("pomoCountInput").value;
-  const taskDayIdx = parseInt(document.getElementById("dayIndexInput").value);
+  const MonthIdx = parseInt(document.getElementById("monthIndexInput").value);
+  const DateIdx = parseInt(document.getElementById("dateIndexInput").value);
 
+  if (!taskName) {
+    alert("Please enter a task name.");
+    return;
+  }
   // Create a json object to send to flask serverside
   const response = await fetch('/addtask', {
     method: 'POST',
@@ -269,7 +304,8 @@ taskFormPopup.addEventListener("submit", async function (e) {
     body: JSON.stringify({
       task_name: taskName,
       pomodoro_count: noPomodoros,
-      day_index: taskDayIdx,
+      date_index: DateIdx,
+      month_index: MonthIdx
     }),
   });
 
@@ -277,7 +313,7 @@ taskFormPopup.addEventListener("submit", async function (e) {
   console.log(data);
   if (data.success) {
     taskId = data.task_id;
-    addTask(taskName, noPomodoros, taskDayIdx, taskId);
+    addTask(taskName, noPomodoros, MonthIdx, DateIdx, taskId);
     alert("Task added successfully!");
   }
   else {
@@ -285,19 +321,14 @@ taskFormPopup.addEventListener("submit", async function (e) {
   }
 })
 
-
-
-window.addEventListener("DOMContentLoaded", async () => {
-  renderColumns();
-
+async function loadTasksForCurrentWeek() {
   try {
     const response = await fetch("/gettask");
     const data = await response.json();
 
     if (data.success) {
       data.tasks.forEach(task => {
-        task.day -= 1;
-        addTask(task.task, task.pomocount, task.day, task.id);  // reuse your existing function
+        addTask(task.task, task.pomocount, task.month, task.date, task.id);  // reuse your existing function
       });
     } else {
       alert("Failed to load tasks.");
@@ -306,4 +337,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     console.error("Error fetching tasks:", error);
     alert("Error loading tasks")
   }
+}
+
+
+window.addEventListener("DOMContentLoaded", async () => {
+  renderColumns();
+  await loadTasksForCurrentWeek();
 });

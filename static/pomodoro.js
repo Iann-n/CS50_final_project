@@ -2,9 +2,11 @@ const currentTask = JSON.parse(localStorage.getItem("currentTask"));
 if (currentTask) {
     taskId = currentTask.taskId;
     noPomodoros = parseInt(currentTask.noPomodoros);
-    taskName = currentTask.noPomodoros;
+    taskName = currentTask.taskName;
+    date_idx = currentTask.date_idx;
+    month_idx = currentTask.month_idx;
 }
-console.log(taskId, noPomodoros, taskName);
+console.log(taskId, noPomodoros, taskName, date_idx, month_idx);
 
 for (let i = 1; i <= noPomodoros; i++) {
     const pomodoroDiv = document.createElement("div")
@@ -421,14 +423,41 @@ backButton.style.alignSelf = "center";
 backButton.style.flex = "0 0 auto";        // Don't grow or shrink, keep natural size
 document.querySelector(".pomodoro-container").append(backButton);
 
-backButton.addEventListener("click", () => {
-    remainingPomodoro = Math.max(0, noPomodoros - pomoCount); // Result clamped to 0
-        if (remainingPomodoro > 0) {
-        localStorage.setItem("currentTask", JSON.stringify({
-            taskName,
-            remainingPomodoro,
-            taskId
-        }));
+backButton.addEventListener("click", async () => {
+    remainingPomodoro = Math.max(0, noPomodoros - (pomoCount - 1)); // Result clamped to 0
+
+    try {
+        const response = await fetch("/updatetask", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({
+                taskId,
+                updatedpomoCount: remainingPomodoro
+            })
+        });
+
+        const result = await response.json();
+        try {  // Read the response once
+            if (result.success) {
+                window.location.href = "/task-tracker";
+            }
+            else {
+                alert("Failed to update task.");
+            }
+
+        } catch (e) {
+            const text = await response.text();
+            console.error("Failed to parse JSON. Raw response:", text);
+            alert("Server error. Check console for details.");
+            return;
+        }
     }
-    window.location.href = "/task-tracker";
+
+    catch (error) {
+        console.error("Error updating task:", error);
+        alert("Error contacting server.");
+    }
+
 })

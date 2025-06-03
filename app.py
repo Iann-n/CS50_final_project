@@ -134,7 +134,8 @@ def add_task():
         data = request.get_json()
         task = data.get("task_name")
         pomocount = int(data.get("pomodoro_count")) 
-        day_idx = int(data.get("day_index")) + 1
+        month_idx = int(data.get("month_index"))
+        date_idx = int(data.get("date_index"))
 
         if not task:
             return apology("Please provide a task name", 400)
@@ -144,7 +145,7 @@ def add_task():
         
         db = get_db_connection()
         cursor = db.cursor()
-        cursor.execute("INSERT INTO tasks (user_id, task, pomocount, day) VALUES (?, ?, ?, ?)", (session["user_id"], task, pomocount, day_idx))
+        cursor.execute("INSERT INTO tasks (user_id, task, pomocount, month, date) VALUES (?, ?, ?, ?, ?)", (session["user_id"], task, pomocount, month_idx, date_idx))
         db.commit()
         task_id = cursor.lastrowid # Give me the id of the last row inserted
         print(f"TASK ID DEBUG: {task_id}")
@@ -178,13 +179,13 @@ def delete_task():
 def gettask():
     db = get_db_connection()
     cursor = db.cursor()
-    tasks = cursor.execute("SELECT id, task, pomocount, day FROM tasks WHERE user_id = ?", (session["user_id"],)).fetchall()
+    tasks = cursor.execute("SELECT id, task, pomocount, month, date FROM tasks WHERE user_id = ?", (session["user_id"],)).fetchall()
     cursor.close()
     db.close()
 
     # Convert to dic list
     task_list = [
-        {"id": row["id"], "task": row["task"], "pomocount": row["pomocount"], "day": row["day"]}
+        {"id": row["id"], "task": row["task"], "pomocount": row["pomocount"], "month": row["month"], "date": row["date"]}
         for row in tasks
     ]
     return jsonify({"success": True, "tasks": task_list})
@@ -194,8 +195,30 @@ def viewtask():
     if request.method == "POST":
         task_name = request.form.get("task_name")
         pomocount = request.form.get("no_pomodoros")
-        day_idx = request.form.get("day_idx")
+        date_idx = request.form.get("date_idx")
+        month_idx = request.form.get("month_idx")
 
     return render_template("task.html", taskname=task_name)
+
+@app.route("/updatetask", methods=["POST"])
+def updatetask():
+    if request.method == "POST":
+        data = request.get_json()
+        updated_pomocount = data.get("updatedpomoCount")
+        id = data.get("taskId")
+
+        db = get_db_connection()
+        cursor = db.cursor()
+        updated_task = cursor.execute("UPDATE tasks SET pomocount = ? WHERE id = ?", (updated_pomocount, id))
+        db.commit()
+        cursor.close()
+        db.close()
+
+        if updated_pomocount is None or id is None:
+            return jsonify({"success": False, "error": "Missing data"}), 400
+        return jsonify({"success": True})
+    
+
+
 if __name__ == "__main__":
     app.run(debug=True)
