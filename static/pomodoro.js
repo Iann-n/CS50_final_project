@@ -268,7 +268,7 @@ document.querySelector(".pomodoro-container").append(backButton);
 function updateBackButtonLabel(pomoCount, noPomodoros) {
     console.log(pomoCount - 1, noPomodoros);
     if ((pomoCount - 1) === noPomodoros) {
-        backButton.innerHTML = "Mark as complete";
+        backButton.innerHTML = "Mark as completed";
     } else {
         backButton.innerHTML = "Back"; // Optional: reset to default
     }
