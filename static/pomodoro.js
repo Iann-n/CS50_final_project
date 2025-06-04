@@ -19,7 +19,7 @@ for (let i = 1; i <= noPomodoros; i++) {
                 <div class="shortBreak-bar"></div>
                 <div class="longBreak-bar"></div>
             </div>
-            <div class="outfit-regular timer-type">Pomodoro</div>
+            <div class="outfit-regular timer-type">Work</div>
             <div class="outfit-regular timer-display" style="font-size:20px; color: white">25:00</div>
             <div class="pomodoro-buttons">
                 <button class="pomodoro-button editPomodoro">Edit</button>
