@@ -18,24 +18,37 @@
 
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=logout" />
         <link href="https://fonts.googleapis.com/css2?family=Outfit&display=swap" rel="stylesheet">
+
+        <!-- Roboto -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto:ital@0;1&display=swap" rel="stylesheet">
+
         <title>{% block title %}{% endblock %}</title>
     </head>
     <body>
         <div class="row flex-container">
             <div id="sidebar" class="column">
                 <div id="icon_sidebar">
+
+                    <a href="/homepage" style="text-decoration: none; color: inherit;">
                     <div class="sidebar-item">
                         <span class="material-symbols-outlined">home</span>
                         <span class="sidebar-text outfit-regular">Home</span>
                     </div>
+                    </a>
+                    <a href="/task-tracker" style="text-decoration: none; color: inherit;">
                     <div class="sidebar-item">
                         <span class="material-symbols-outlined">today</span> 
                         <span class="sidebar-text outfit-regular">Task Tracker</span>
                     </div>
+                    </a>
+                    <a href="/logout" style="text-decoration: none; color: inherit;">
                     <div class="sidebar-item">
                         <span class="material-symbols-outlined">logout</span>
-                        <span class="sidebar-text outfit-regular">Logout</span>
+                        <span class="sidebar-text outfit-regular" style="font-style: normal;">Logout</span>
                     </div>
+                    </a>
                     <h3 id="footer-text" class="outfit-regular" style="font-size: 20px">@website made by Ian</h3>
                 </div>
             </div>
@@ -47,5 +60,6 @@
     </body>
     <footer>
         {% block footer %}{% endblock %}
+        <script src="/static/sidebar.js"></script>
     </footer>
 </html>

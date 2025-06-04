@@ -258,6 +258,22 @@ pomodoroDivs.forEach((el) => {
     new PomodoroTimer(el);
 })
 
+const backButton = document.createElement("button");
+backButton.className = "pomodoro-button";
+backButton.innerHTML = "back";
+backButton.style.alignSelf = "center"; 
+backButton.style.flex = "0 0 auto";        // Don't grow or shrink, keep natural size
+document.querySelector(".pomodoro-container").append(backButton);
+
+function updateBackButtonLabel(pomoCount, noPomodoros) {
+    console.log(pomoCount - 1, noPomodoros);
+    if ((pomoCount - 1) === noPomodoros) {
+        backButton.innerHTML = "Mark as complete";
+    } else {
+        backButton.innerHTML = "Back"; // Optional: reset to default
+    }
+}
+
 // Initializing pomodoro index
     function updatePomodoroIndex() {
         const pomodoros = document.querySelectorAll("[data-index]")
@@ -289,6 +305,7 @@ pomodoroDivs.forEach((el) => {
             console.log("Buttons Div ClassList after:", buttonDiv.classList);
             console.log("Pomodoro Index: ",pomoCount)
         });
+        updateBackButtonLabel(pomoCount, noPomodoros)
     }
 updatePomodoroIndex();
 
@@ -416,12 +433,6 @@ function triggerMessage() {
 }
 
 // Create back button and its functionalities
-const backButton = document.createElement("button");
-backButton.className = "pomodoro-button";
-backButton.innerHTML = "back";
-backButton.style.alignSelf = "center"; 
-backButton.style.flex = "0 0 auto";        // Don't grow or shrink, keep natural size
-document.querySelector(".pomodoro-container").append(backButton);
 
 backButton.addEventListener("click", async () => {
     remainingPomodoro = Math.max(0, noPomodoros - (pomoCount - 1)); // Result clamped to 0

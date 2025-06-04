@@ -90,7 +90,7 @@ def register():
 
         cursor.close()
         db.close()
-        return redirect("/task-tracker")
+        return redirect("/homepage")
     else:
         return render_template("register.html")
 
@@ -120,10 +120,20 @@ def login():
         # Restore user session
         session["user_id"] = rows[0]["id"]
 
-        return redirect("/task-tracker")
+        return redirect("/homepage")
     else:
         return render_template("login.html")
     
+@app.route("/logout")
+def logout():
+    session.clear()
+    print("HOMEPAGE CALLED")
+    return redirect("/")
+    
+@app.route("/homepage", methods=["GET"])
+def home_page():
+    return render_template("homepage.html")
+
 @app.route("/task-tracker", methods=["GET"])
 def tasktracker():
     return render_template("task-tracker.html")
@@ -179,13 +189,13 @@ def delete_task():
 def gettask():
     db = get_db_connection()
     cursor = db.cursor()
-    tasks = cursor.execute("SELECT id, task, pomocount, month, date FROM tasks WHERE user_id = ?", (session["user_id"],)).fetchall()
+    tasks = cursor.execute("SELECT id, task, pomocount, month, date, completed FROM tasks WHERE user_id = ?", (session["user_id"],)).fetchall()
     cursor.close()
     db.close()
 
     # Convert to dic list
     task_list = [
-        {"id": row["id"], "task": row["task"], "pomocount": row["pomocount"], "month": row["month"], "date": row["date"]}
+        {"id": row["id"], "task": row["task"], "pomocount": row["pomocount"], "month": row["month"], "date": row["date"], "completed": row["completed"]}
         for row in tasks
     ]
     return jsonify({"success": True, "tasks": task_list})
@@ -207,18 +217,25 @@ def updatetask():
         updated_pomocount = data.get("updatedpomoCount")
         id = data.get("taskId")
 
-        db = get_db_connection()
-        cursor = db.cursor()
-        updated_task = cursor.execute("UPDATE tasks SET pomocount = ? WHERE id = ?", (updated_pomocount, id))
-        db.commit()
-        cursor.close()
-        db.close()
-
         if updated_pomocount is None or id is None:
             return jsonify({"success": False, "error": "Missing data"}), 400
-        return jsonify({"success": True})
-    
 
+        db = get_db_connection()
+        cursor = db.cursor()
+        if (updated_pomocount != 0):
+            updated_task = cursor.execute("UPDATE tasks SET pomocount = ? WHERE id = ?", (updated_pomocount, id))
+            db.commit()
+
+        elif (updated_pomocount == 0): 
+            updated_task = cursor.execute("UPDATE tasks SET pomocount = ?, completed = ? WHERE id = ?", (updated_pomocount, 1, id))
+            db.commit()
+
+        cursor.close()
+        db.close()
+        if updated_pomocount is None or id is None:
+            return jsonify({"success": False, "error": "Missing data"}), 400
+        
+        return jsonify({"success": True})
 
 if __name__ == "__main__":
     app.run(debug=True)

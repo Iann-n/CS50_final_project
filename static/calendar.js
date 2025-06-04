@@ -325,18 +325,23 @@ async function loadTasksForCurrentWeek() {
   try {
     const response = await fetch("/gettask");
     const data = await response.json();
+    console.log(response)
+    console.log(data)
 
-    if (data.success) {
-      data.tasks.forEach(task => {
-        addTask(task.task, task.pomocount, task.month, task.date, task.id);  // reuse your existing function
-      });
-    } else {
-      alert("Failed to load tasks.");
+
+  if (data.success) {
+        const activeTasks = data.tasks.filter(task => task.completed === 0);
+        console.log(activeTasks)
+        activeTasks.forEach(task => {
+          addTask(task.task, task.pomocount, task.month, task.date, task.id);
+        });
+      } else {
+        alert("Failed to load tasks.");
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      alert("Error loading tasks");
     }
-  } catch (error) {
-    console.error("Error fetching tasks:", error);
-    alert("Error loading tasks")
-  }
 }
 
 
