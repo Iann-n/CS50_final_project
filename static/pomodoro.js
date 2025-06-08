@@ -20,7 +20,7 @@ for (let i = 1; i <= noPomodoros; i++) {
                 <div class="longBreak-bar"></div>
             </div>
             <div class="outfit-regular timer-type">Work</div>
-            <div class="outfit-regular timer-display" style="font-size:20px; color: white">25:00</div>
+            <div class="outfit-regular timer-display" style="font-size:20px; color: navy">25:00</div>
             <div class="pomodoro-buttons">
                 <button class="pomodoro-button editPomodoro">Edit</button>
                 <button class="pomodoro-button startStopPomodoro">Start/Stop</button>
@@ -198,7 +198,7 @@ class PomodoroTimer {
                     this.progressBar.style.transition = "transform 1s linear";
 
                     setTimeout(() => {
-                        new Audio('/static/yay.mp3').play();
+                        new Audio('/static/timer ring.wav').play();
                         triggerConfetti();
                         // Reset UI
                         this.progressBar.style.display = "none";

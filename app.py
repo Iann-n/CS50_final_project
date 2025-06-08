@@ -134,6 +134,10 @@ def logout():
 def home_page():
     return render_template("homepage.html")
 
+@app.route("/todolist", methods=["GET"])
+def todolist():
+    return render_template("todolist.html")
+
 @app.route("/task-tracker", methods=["GET"])
 def tasktracker():
     return render_template("task-tracker.html")
@@ -236,6 +240,20 @@ def updatetask():
             return jsonify({"success": False, "error": "Missing data"}), 400
         
         return jsonify({"success": True})
+    
+@app.route("/loadUncompletedTask")
+def loadUncompletedTask():
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    tasks = cursor.execute("SELECT task, pomocount, id, month, date FROM tasks WHERE user_id = ?, completed = ?", (session["user_id"], 0))
+    task_list = [
+    {"id": row["id"], "name": row["task"], "pomocount": row["pomocount"], "month": row["month", "date": row["date"]]}
+    for row in tasks
+    ]
+
+    return jsonify({"success": True, "tasks": task_list})
+    
 
 if __name__ == "__main__":
     app.run(debug=True)

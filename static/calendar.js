@@ -15,7 +15,7 @@
         const index = parseInt(column.getAttribute('data-index'));
         if (index === day) {
             // Change CSS style to highlight today's column
-            column.style.backgroundColor = 'crimson';
+            column.style.backgroundColor = 'navy';
 
             // calculate the date for the start day
             start_day = date - i;
@@ -78,7 +78,7 @@ function renderColumns() {
     dayDate.setHours(0, 0, 0, 0); // Normalize
     const column = el.closest('.day-column'); // finds the closest day-column class element
     column.style.backgroundColor = 
-      dayDate.getTime() === today.getTime() ? 'crimson' : '';
+      dayDate.getTime() === today.getTime() ? 'navy' : '';
   });
 
     document.querySelectorAll('.month').forEach((el, i) => {

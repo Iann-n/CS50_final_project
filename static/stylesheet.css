@@ -12,7 +12,7 @@
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: rgb(244, 169, 169); 
+  background: #eaf0f7; 
 }
  
 /* Handle */
@@ -31,7 +31,7 @@ so that they can expand to fill the entire page*/
 main{
     display: flex;
     flex-direction: column;
-    background-color: rgb(244, 169, 169);
+    background-color: #eaf0f7;
     overflow-x: auto;
     align-items: center;
     height: 100%;
@@ -51,14 +51,14 @@ main{
 #sidebar {
     display: flex;
     flex-direction: column;
-    background-color:#f47676;
+    background-color:navy;
     position: relative;
 }
 
 /* Sidebar styling */
 #icon_sidebar {
     width: 250px; /* Sidebar width */
-    background-color: #f47676; /* Light gray background */
+    background-color: navy; /* Light gray background */
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -78,7 +78,7 @@ main{
 }
 /* Hover effect */
 .sidebar-item:hover {
-    background-color: #f58989; /* Light hover effect */
+    background-color: rgb(88, 97, 190); /* Light hover effect */
 }
 
 /* Icon styling */
@@ -96,7 +96,7 @@ main{
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    background-color: #f08a8a;
+    background-color: #eaf0f7;
     overflow-y: auto; /* Add scroll bar and basically extend the page*/
 }
 
@@ -139,7 +139,7 @@ main{
     font-family: "Ubuntu", sans-serif;
     font-weight: 400;
     font-style: normal;
-    color: whitesmoke;
+    color: white;
     font-size:25px;
 }
 
@@ -148,7 +148,7 @@ main{
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
-  color: whitesmoke;
+  color: navy;
   font-size:25px;
 }
 
@@ -159,7 +159,7 @@ main{
   font-style: normal;
   font-variation-settings:
     "wdth" 100;
-  color: whitesmoke;
+  color: navy;
 }
 
 
@@ -204,7 +204,7 @@ main{
     width: 250px;
     height:40px;
     padding: 16px;
-    background-color: #f08a8a;
+    background-color: #c1bfd6;
     border-radius: 10px;
     height: auto;
     overflow-y: auto;
@@ -223,7 +223,7 @@ main{
     opacity: 0;
     transition: opacity 0.2s ease;
     background-color: white;
-    color:#f47676;
+    color:#7a76f4;
     border: none;
     border-radius: 10px;
     padding: 8px 12px;
@@ -240,10 +240,10 @@ main{
 }
 
 #prevBtn, #nextBtn {
-    background-color:rgb(244, 169, 169);
-    color: white;
+    color: navy;
+    background-color: #eaf0f7;
     border: none;
-    border-radius: 50%;
+    border-radius: 100px;
     padding: 10px;
     cursor: pointer;
     transition: 0.2s ease;
@@ -275,7 +275,8 @@ main{
 }
 
 #prevBtn:hover, #nextBtn:hover {
-    background: #8a3333;
+    background: #37338a;
+    color: white;
     transform: scale(1.05);
     border-radius: 100px;
 }
@@ -297,15 +298,15 @@ main{
 .task-div:hover {
     transform: scale(1.05);
     cursor: pointer;
-    background-color: #8a3333;
+    background-color: #0f1c52 ;
                
 }
 
 .deleteTaskButton {
   color: #000000;
   font-size: 15px;
-  background: #e88383;
-  border: 1px solid #e88383;
+  background: #83a6e8;
+  border: 1px solid #83a6e8;
   cursor: pointer;
   transform: scale(1);
   transition: all 0.2s ease;
@@ -337,13 +338,14 @@ form {
   border-radius: 15px;
   padding: 1em;
   background-color: #eef1f9;
+  border: 1.5px solid #003257;
   transition: 300ms ease-in-out;
 }
 
 .input-field:focus {
   background-color: #f5f7fc;
   transform: scale(1.05);
-  border: 1.5px solid black;
+
 }
 
 .submit-button {
@@ -363,7 +365,7 @@ form {
 }
 
 .submit-button:hover {
-  background-color: #7e8180;
+  background-color: #373774;
   box-shadow: 0px 15px 20px rgba(38, 49, 44, 0.4);
   color: #fff;
   transform: translateY(-7px);
@@ -383,12 +385,12 @@ form {
 
 a {
     text-decoration: underline;
-    color:#ffffff;
+    color:navy;
     transition: ease 0.2s;
 }
 
 a:hover {
-    color:#555;
+    color:#020237;
 }
 
 /* For apologies.html */
@@ -466,7 +468,7 @@ a:hover {
 .progress-container {
   width: 50%; 
   height: 20px;
-  background-color: rgb(244, 169, 169);
+  background-color: #eaf0f7;
   border: white 3px solid;
   border-radius: 20px;
   overflow: hidden;
@@ -504,14 +506,13 @@ a:hover {
 .pomodoro-button {
   border: none;
   outline: none;
-  background-color: #e74c3c;
+  background-color: #17236a;
   padding: 10px 20px;
   font-size: 12px;
   font-weight: 700;
   color: #fff;
   border-radius: 5px;
-
-  box-shadow: 0px 5px 0px 0px #d88fa0;
+  box-shadow: 0px 5px 0px 0px #0a173b;
   cursor: pointer;
 }
 
