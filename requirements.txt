@@ -1,6 +1,8 @@
 # Production server
 gunicorn>=20.0.0  # ← ADD THIS (essential for deployment)
 
+redis
+
 # Flask core
 Flask>=2.0.0
 Flask-Session>=0.4.0
