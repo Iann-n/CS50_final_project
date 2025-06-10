@@ -1,6 +1,6 @@
-Flask
-Flask-Session
-redis
-gunicorn
-Flask-SQLAlchemy
-SQLAlchemy
+Flask>=2.0.0
+Flask-SQLAlchemy>=3.0.0
+SQLAlchemy>=1.4.0
+psycopg2-binary>=2.9.0
+Flask-Migrate>=4.0.0
+python-dotenv>=0.20.0
