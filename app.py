@@ -1,13 +1,18 @@
 from flask import Flask, redirect, render_template, request, session, jsonify
 from flask_session import Session
+from flask_sqlalchemy import SQLAlchemy
 import sqlite3
 from hashlib import sha512
+import os
 
 app = Flask(__name__)
 
 app.config["SESSION_PERMANENT"] = True
-app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_TYPE"] = "redis"
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 Session(app)
+db = SQLAlchemy(app)
 
 #ensuring flask updates every time after reload
 app.config["TEMPLATES_AUTO_RELOAD"] = True
