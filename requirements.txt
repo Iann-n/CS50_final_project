@@ -3,6 +3,7 @@ gunicorn>=20.0.0  # ← ADD THIS (essential for deployment)
 
 # Flask core
 Flask>=2.0.0
+Flask-Session>=0.4.0
 Flask-SQLAlchemy>=3.0.0
 SQLAlchemy>=1.4.0
 
