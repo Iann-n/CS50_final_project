@@ -3,14 +3,19 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 import sqlite3
 from hashlib import sha512
+from dotenv import load_dotenv
 import os
+import redis
 
 app = Flask(__name__)
 
+load_dotenv()
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "redis"
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SESSION_REDIS'] = redis.from_url(os.getenv('REDIS_URL'))
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 Session(app)
 db = SQLAlchemy(app)
 
